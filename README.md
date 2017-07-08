@@ -1,23 +1,31 @@
 # glade_to_c
 A simple program to parse Glade-Files with expat and create some c-code.
 
-usage:
+1. Compile
 
-glade_to_c $filename
+You need the libexpat for comling the source
 
-The program parses the file from glade and generate the following files:
+2. Install
 
+Copy the binary into a $somewhere/bin 
 
-prototyp_widget-structure.h
+3. Usage:
 
-Define a structure with all widget
+  glade_to_c $filename
 
-
-prototyp_widget.c prototyp_widget.h
-
-Use gtk-builder to generate the widget and the callback
+  The program parses the file from glade and generate the following files:
 
 
-prototyp_callback_widget.c  prototyp_callback_widget.h
+    prototyp_widget-structure.h
 
-Callback funtion for all widget with a signal handler
+    Define a structure with all widget
+
+
+    prototyp_widget.c prototyp_widget.h
+
+    Use gtk-builder to generate the widget and the callback
+
+
+    prototyp_callback_widget.c  prototyp_callback_widget.h
+
+    Callback funtion for all widget with a signal handler
