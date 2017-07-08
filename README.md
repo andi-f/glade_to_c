@@ -3,19 +3,19 @@ A simple program to parse Glade-Files with expat and create some c-code.
 
 1. Compile
 
-You need the libexpat for comling the source
+    You need the libexpat for comling the source
 
 2. Install
 
-Copy the binary into a $somewhere/bin 
+    Copy the binary into a $somewhere/bin 
 
 3. Usage:
 
-  glade_to_c $filename
-
-  The program parses the file from glade and generate the following files:
-
-
+    glade_to_c $filename
+    
+    The program parses the file from glade and generate the following files:
+    
+    
     prototyp_widget-structure.h
 
     Define a structure with all widget
