@@ -11,7 +11,7 @@ A simple program to parse Glade-Files with expat and create some c-code.
 
 3. Usage:
 
-    glade_to_c $filename
+    glade_to_c $filename [optional] widget structure name
     
     The program parses the file from glade and generate the following files:
     
@@ -28,4 +28,8 @@ A simple program to parse Glade-Files with expat and create some c-code.
 
     prototyp_callback_widget.c  prototyp_callback_widget.h
 
-    Callback funtion for all widget with a signal handler
+    Callback function for all widget with a signal handler
+    
+    prototyp_signal.h prototyp_signal.c
+    connection_mapper for signal
+    
