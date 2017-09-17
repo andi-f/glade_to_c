@@ -43,7 +43,8 @@ int		signal_level = 0;	//detect a signal
 
 int		Depth;	/* Keep track of the current level in the XML tree */
 
-char	*filename_struct = "prototyp_widget-structure.h";
+
+char	*filename_struct = "prototyp_widget_structure.h";
 FILE	*fp_struct;
     
 char	*filename_widget = "prototyp_widget.c";
@@ -91,7 +92,7 @@ void start(void *data, const char *el, const char **attr)	{
 		
 		if((str1 != NULL) && (str2 != NULL))	{
 			if(strstr(attr[1],"GtkAdjustment") != NULL)	{
-				#ifdef DEBUGLEVEL1
+				#ifdef DEBUGLEVEL2
 					fprintf(stderr, "GtkAdjustment *%s;\n", attr[3]);
 				#endif
 				fprintf(fp_struct, "GtkAdjustment *%s;\n", attr[3]);
@@ -119,20 +120,20 @@ void start(void *data, const char *el, const char **attr)	{
 			str2 = strstr(attr[2],"handler");		
 		if((str1 != NULL) && (str2 != NULL))	{
 				#ifdef DEBBUGLEVEL1
-					fprintf(stderr, "extern void *%s(GtkWidget *widget, %s_data *wdg_data);\n", attr[3]);
+				fprintf(stderr, "extern void *%s(GtkWidget *widget, %s_data *wdg_data);\n", attr[3]);
 				#endif
-				fprintf(fp_cb_h, "extern void *%s(GtkWidget *widget, %s_data *wdg_data);\n", structname,attr[3]);
-				fprintf(fp_cb, "void %s(GtkWidget *widget, %s_data *wdg_data)\t{\n}\n\n",structname, attr[3]);
+				fprintf(fp_cb_h, "extern void *%s(GtkWidget *widget, %s_data *wdg_data);\n", attr[3],structname);
+				fprintf(fp_cb, "void %s(GtkWidget *widget, %s_data *wdg_data)\t{\n\tfprintf(stderr,\"%s active\\n\");\n}\n\n",attr[3], structname, attr[3]);
 
-				#ifdef DEBBUGLEVEL1
+				#ifdef DEBUGLEVEL1
 				fprintf(stderr,"\tif (g_strcmp0 (handler_name, \"%s\") == 0)\n",attr[3]);
-				fprintf(stderr,"\t\tg_signal_connect (object, signal_name, G_CALLBACK(%s), %s_data);\n",attr[3]);
+				fprintf(stderr,"\t\tg_signal_connect (object, signal_name, G_CALLBACK(%s), wdg_data);\n",attr[3]);
 				fprintf(stderr,"\telse\n");
 				#endif		
 				
 				
 				fprintf(fp_sc,"\tif (g_strcmp0 (handler_name, \"%s\") == 0)\n",attr[3]);
-				fprintf(fp_sc,"\t\tg_signal_connect (object, signal_name, G_CALLBACK(%s), %s_data);\n",attr[3], structname);
+				fprintf(fp_sc,"\t\tg_signal_connect (object, signal_name, G_CALLBACK(%s), wdg_data);\n",attr[3]);
 				fprintf(fp_sc,"\telse\n");
 			}
 	}			
@@ -176,9 +177,9 @@ int main(int argc, char **argv)
     }
     
     filename = argv[1];
-    
-    
-    if(strlen(argv[2]) == 0)	{
+
+
+    if(argc == 2)	{
 			structname = malloc(10);
 			structname = "%s";
 	}
@@ -253,38 +254,51 @@ int main(int argc, char **argv)
         fprintf(stderr, "Parser not created\n");
         return (-EXIT_FAILURE);
     }
-	
-	fprintf(fp_struct,"#include <stdint.h>\n");
-	fprintf(fp_struct,"#include <gtk/gtk.h>\n\n");
 
+	fprintf(fp_struct,"#include <gtk/gtk.h>\n\n");
 	fprintf(fp_struct,"typedef struct {\n");
 	fprintf(fp_struct,"GtkBuilder *builder;\n\n");
 	
-	fprintf(fp_widget,"#include \"%s.h\"\n",structname);
+
+	fprintf(fp_cb,"#include <gtk/gtk.h>\n");
+	fprintf(fp_cb,"#include <glib/gprintf.h>\n");
+	fprintf(fp_cb,"#include <gtk/gtk.h>\n\n");
+	fprintf(fp_cb,"#include \"widget_structure.h\"\n\n");
+
+	fprintf(fp_cb_h,"#include <gtk/gtk.h>\n\n");
+	fprintf(fp_cb_h,"#include \"widget_structure.h\"\n\n");	
+
+
 	fprintf(fp_widget,"#include \"callback_widget.h\"\n");
 	fprintf(fp_widget,"#include \"signal_connect.h\"\n\n");
-	
-	fprintf(fp_widget,"void wdg_main(%s *wdg_data)\t{\n",structname);
+	fprintf(fp_widget,"void wdg_main(%s_data *wdg_data)\t{\n",structname);
 	fprintf(fp_widget,"\twdg_data->builder = gtk_builder_new();\n");
     fprintf(fp_widget,"\tgtk_builder_add_from_file (wdg_data->builder, \"%s\", NULL);\n",filename);
-    
-    
+
+
+    fprintf(fp_widget_h,"extern void wdg_main(%s_data *wdg_data);",structname);
+    fclose(fp_widget_h);
+
+
+    fprintf(fp_sc,"#include <gtk/gtk.h>\n");
+    fprintf(fp_sc,"#include <glib.h>\n");
+	fprintf(fp_sc,"#include <glib/gprintf.h>\n");
+	fprintf(fp_sc,"#include <glib/gprintf.h>\n\n");
+	
+	fprintf(fp_sc,"#include \"widget_structure.h\"\n");	
+	fprintf(fp_sc,"#include \"callback_widget.h\"\n\n");
+
+    fprintf(fp_sc,"void connection_mapper (GtkBuilder *builder, GObject *object,\n");
+	fprintf(fp_sc,"\tconst gchar *signal_name, const gchar *handler_name,\n");
+	fprintf(fp_sc,"\tGObject *connect_object, GConnectFlags flags, %s_data *wdg_data)\t{\n",structname);
+	fprintf(fp_sc,"\tg_print (\"Verbinde %%s mit %%s\\n\", signal_name, handler_name);\n\n");
+
     fprintf(fp_sc_h,"#include <gtk/gtk.h>\n\n");
 	fprintf(fp_sc_h,"extern void connection_mapper (GtkBuilder *builder, GObject *object,\n");
 	fprintf(fp_sc_h,"\tconst gchar *signal_name, const gchar *handler_name,\n");
 	fprintf(fp_sc_h,"\tGObject *connect_object, GConnectFlags flags, gpointer user_data);\n");
 
-    fprintf(fp_sc,"#include <gtk/gtk.h>\n");
-    fprintf(fp_sc,"#include <glib.h>\n");
-	fprintf(fp_sc,"#include <glib/gprintf.h>\n");
-	fprintf(fp_sc,"#include <glib/gprintf.h>\n");
-    fprintf(fp_sc,"#include \"widget-structure.h\"\n\n");
-    fprintf(fp_sc,"void connection_mapper (GtkBuilder *builder, GObject *object,\n");
-	fprintf(fp_sc,"\tconst gchar *signal_name, const gchar *handler_name,\n");
-	fprintf(fp_sc,"\tGObject *connect_object, GConnectFlags flags, %s_data *wdg_data)\t{\n",structname);
-	fprintf(fp_sc,"\tg_print (\"Verbinde %%s mit %%s\\n\", signal_name, handler_name);\n\n");
-	
-	
+
     /* Tell expat to use functions start() and end() each times it encounters
      * the start or end of an element. */
     XML_SetElementHandler(parser, start, end);
@@ -318,7 +332,7 @@ int main(int argc, char **argv)
     fclose(fp_widget);
     
 	
-    fprintf(fp_cb,"}\n");
+    fprintf(fp_cb,"\n");
     fclose(fp_cb);
 
     fprintf(fp_cb_h,"\n");
@@ -331,10 +345,6 @@ int main(int argc, char **argv)
     fprintf(fp_sc_h,"\n");
     fclose(fp_sc_h);
 
-
-    fprintf(fp_widget_h,"extern void wdg_main(xxx_data *wdg_data);");
-    fclose(fp_widget_h);
-    
     XML_ParserFree(parser);
     fprintf(stdout, "Successfully parsed %li characters in file %s\n", size,
         argv[1]);
