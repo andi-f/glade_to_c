@@ -5,3 +5,5 @@ RC1
 add signal_connect function
 bugfix
 renaming wdg structure
+13.10.2017
+Add GtkEntry

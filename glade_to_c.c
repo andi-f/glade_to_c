@@ -36,7 +36,7 @@
 #define MAXCHARS 1000000
 #define MAXLEN 1024
 
-#define DEBUGLEVEL0
+#define DEBUGLEVEL1
 
 int		widget_level = 0;	//detect a widget
 int		signal_level = 0;	//detect a signal
@@ -96,17 +96,26 @@ void start(void *data, const char *el, const char **attr)	{
 					fprintf(stderr, "GtkAdjustment *%s;\n", attr[3]);
 				#endif
 				fprintf(fp_struct, "GtkAdjustment *%s;\n", attr[3]);
+				//GtkAdjustment has no callback
 			}
 			else
-			{
+			if(strstr(attr[1],"GtkEntry") != NULL)	{
+				#ifdef DEBUGLEVEL1
+					fprintf(stderr, "GtkEntry *%s;\n", attr[3]);		
+				#endif	
+				fprintf(fp_struct, "GtkEntry *%s;\n", attr[3]);
+
+				fprintf(fp_widget, "\twdg_data->%s = GTK_Entry(gtk_builder_get_object(wdg_data->builder, \"%s\"));\n", attr[3], attr[3]);
+				}
+			else
+			{			
 				#ifdef DEBUGLEVEL1
 					fprintf(stderr, "GtkWidget *%s;\n", attr[3]);		
 				#endif	
 				fprintf(fp_struct, "GtkWidget *%s;\n", attr[3]);
-				//GtkAdjustment has no callback
+
 				fprintf(fp_widget, "\twdg_data->%s = GTK_WIDGET(gtk_builder_get_object(wdg_data->builder, \"%s\"));\n", attr[3], attr[3]);										
 			}
-
 		}
 	}
 
@@ -119,18 +128,17 @@ void start(void *data, const char *el, const char **attr)	{
 		if (attr[2] != NULL)
 			str2 = strstr(attr[2],"handler");		
 		if((str1 != NULL) && (str2 != NULL))	{
-				#ifdef DEBBUGLEVEL1
-				fprintf(stderr, "extern void *%s(GtkWidget *widget, %s_data *wdg_data);\n", attr[3]);
-				#endif
+				//#ifdef DEBBUGLEVEL1
+				//fprintf(stderr, "extern void *%s(GtkWidget *widget, %s_data *wdg_data);\n", attr[3]);
+				//#endif
 				fprintf(fp_cb_h, "extern void *%s(GtkWidget *widget, %s_data *wdg_data);\n", attr[3],structname);
 				fprintf(fp_cb, "void %s(GtkWidget *widget, %s_data *wdg_data)\t{\n\tfprintf(stderr,\"%s active\\n\");\n}\n\n",attr[3], structname, attr[3]);
 
-				#ifdef DEBUGLEVEL1
-				fprintf(stderr,"\tif (g_strcmp0 (handler_name, \"%s\") == 0)\n",attr[3]);
-				fprintf(stderr,"\t\tg_signal_connect (object, signal_name, G_CALLBACK(%s), wdg_data);\n",attr[3]);
-				fprintf(stderr,"\telse\n");
-				#endif		
-				
+				//#ifdef DEBUGLEVEL1
+				//fprintf(stderr,"\tif (g_strcmp0 (handler_name, \"%s\") == 0)\n",attr[3]);
+				//fprintf(stderr,"\t\tg_signal_connect (object, signal_name, G_CALLBACK(%s), wdg_data);\n",attr[3]);
+				//fprintf(stderr,"\telse\n");
+				//#endif		
 				
 				fprintf(fp_sc,"\tif (g_strcmp0 (handler_name, \"%s\") == 0)\n",attr[3]);
 				fprintf(fp_sc,"\t\tg_signal_connect (object, signal_name, G_CALLBACK(%s), wdg_data);\n",attr[3]);
