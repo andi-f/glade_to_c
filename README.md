@@ -31,5 +31,6 @@ A simple program to parse Glade-Files with expat and create some c-code.
     Callback function for all widget with a signal handler
     
     signal_prototyp_from_glade.h signal_prototyp_from_glade.c
+    
     connection_mapper for signal
     
