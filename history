@@ -7,3 +7,6 @@ bugfix
 renaming wdg structure
 13.10.2017
 Add GtkEntry
+1.11.2017
+Change file to x_prototyp_from_glade.x
+Bugfix
