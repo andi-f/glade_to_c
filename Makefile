@@ -13,4 +13,7 @@ all: $(OBJ)
 	$(CC) $(CFLAGS) -c $< $(LDFLAGS)
 
 clean:
-	rm -f $(PRG) *~ *.o a.out core
+	rm -f $(PRG) *~ *.o a.out core *protot*
+
+install:
+	sudo cp $(PRG) /usr/local/bin

@@ -44,25 +44,25 @@ int		signal_level = 0;	//detect a signal
 int		Depth;	/* Keep track of the current level in the XML tree */
 
 
-char	*filename_struct = "prototyp_widget_structure.h";
+char	*filename_struct = "widget_structure_prototyp_from_glade.h";
 FILE	*fp_struct;
     
-char	*filename_widget = "prototyp_widget.c";
+char	*filename_widget = "widget_prototyp_from_glade.c";
 FILE	*fp_widget;
 
-char	*filename_widget_h = "prototyp_widget.h";
+char	*filename_widget_h = "widget_prototyp_from_glade.h";
 FILE	*fp_widget_h;
     
-char	*filename_cb = "prototyp_callback_widget.c";
+char	*filename_cb = "callback_widget_prototyp_from_glade.c";
 FILE	*fp_cb;
     
-char	*filename_cb_h = "prototyp_callback_widget.h";
+char	*filename_cb_h = "callback_widget_prototyp_from_glade.h";
 FILE	*fp_cb_h;
 
-char	*filename_sc_h = "prototyp_signal_connect.h";
+char	*filename_sc_h = "signal_connect_prototyp_from_glade.h";
 FILE	*fp_sc_h;
 
-char	*filename_sc = "prototyp_signal_connect.c";
+char	*filename_sc = "signal_connect_prototyp_from_glade.c";
 FILE	*fp_sc;
     
 char	*filename;
@@ -91,31 +91,37 @@ void start(void *data, const char *el, const char **attr)	{
 			str2 = strstr(attr[2],"id");
 		
 		if((str1 != NULL) && (str2 != NULL))	{
-			if(strstr(attr[1],"GtkAdjustment") != NULL)	{
-				#ifdef DEBUGLEVEL2
-					fprintf(stderr, "GtkAdjustment *%s;\n", attr[3]);
-				#endif
-				fprintf(fp_struct, "GtkAdjustment *%s;\n", attr[3]);
-				//GtkAdjustment has no callback
-			}
-			else
+	
+		#ifdef DEBUGLEVEL2
+			fprintf(stderr, "%s %s %s %s %s\n\r",attr[0],attr[1],attr[2],attr[3],attr[4]);
+		#endif
+    			
 			if(strstr(attr[1],"GtkEntry") != NULL)	{
-				#ifdef DEBUGLEVEL1
-					fprintf(stderr, "GtkEntry *%s;\n", attr[3]);		
-				#endif	
-				fprintf(fp_struct, "GtkEntry *%s;\n", attr[3]);
-
 				fprintf(fp_widget, "\twdg_data->%s = GTK_Entry(gtk_builder_get_object(wdg_data->builder, \"%s\"));\n", attr[3], attr[3]);
-				}
-			else
-			{			
-				#ifdef DEBUGLEVEL1
-					fprintf(stderr, "GtkWidget *%s;\n", attr[3]);		
-				#endif	
-				fprintf(fp_struct, "GtkWidget *%s;\n", attr[3]);
-
-				fprintf(fp_widget, "\twdg_data->%s = GTK_WIDGET(gtk_builder_get_object(wdg_data->builder, \"%s\"));\n", attr[3], attr[3]);										
 			}
+			else
+			if(strstr(attr[1],"GtkWidget") != NULL)	{
+				fprintf(fp_widget, "\twdg_data->%s = GTK_Widget(gtk_builder_get_object(wdg_data->builder, \"%s\"));\n", attr[3], attr[3]);
+			}
+			else {
+				fprintf(fp_widget, "\twdg_data->%s = GTK_Widget(gtk_builder_get_object(wdg_data->builder, \"%s\"));\n", attr[3], attr[3]);
+			}
+			
+			fprintf(stderr, "%s\t", attr[1]);
+			fprintf(fp_struct, "%s\t", attr[1]);
+
+			if (strlen(attr[1]) < 8)	{
+				fprintf(stderr, "\t\t");
+				fprintf(fp_struct, "\t\t");
+			}
+			else 
+			if (strlen(attr[1]) < 12)	{
+				fprintf(stderr, "\t");
+				fprintf(fp_struct, "\t");
+			}
+		
+			fprintf(stderr, "*%s;\n", attr[3]);
+			fprintf(fp_struct, "*%s;\n", attr[3]);
 		}
 	}
 
@@ -175,9 +181,9 @@ int main(int argc, char **argv)
     XML_Parser      parser;
 
 	fprintf(stderr, "Glade_to_c\n");
-	fprintf(stderr, "A simple CLI tool to generat some c.code from a Glade file\n");
+	fprintf(stderr, "A simple CLI tool to generat some c-code from a Glade file\n");
 	fprintf(stderr, "Written by Andreas Fischer 2017\n");
-	fprintf(stderr, "Version 0.99rc1\n");
+	fprintf(stderr, "Version 0.99rc2\n");
 	
     if (argc < 2) {
         fprintf(stderr, "Usage: %s filename [optional widget_structure_name]\n", argv[0]);
@@ -189,7 +195,7 @@ int main(int argc, char **argv)
 
     if(argc == 2)	{
 			structname = malloc(10);
-			structname = "%s";
+			structname = "this";
 	}
     else
 		structname = argv[2];
