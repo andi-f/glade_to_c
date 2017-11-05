@@ -87,41 +87,34 @@ void start(void *data, const char *el, const char **attr)	{
 	if (widget_level > 0){
 		if (attr[0] != NULL)
 			str1 = strstr(attr[0],"class");
+
 		if (attr[2] != NULL)
 			str2 = strstr(attr[2],"id");
 		
 		if((str1 != NULL) && (str2 != NULL))	{
-	
-		#ifdef DEBUGLEVEL2
-			fprintf(stderr, "%s %s %s %s %s\n\r",attr[0],attr[1],attr[2],attr[3],attr[4]);
-		#endif
-    			
-			if(strstr(attr[1],"GtkEntry") != NULL)	{
-				fprintf(fp_widget, "\twdg_data->%s = GTK_Entry(gtk_builder_get_object(wdg_data->builder, \"%s\"));\n", attr[3], attr[3]);
-			}
-			else
-			if(strstr(attr[1],"GtkWidget") != NULL)	{
-				fprintf(fp_widget, "\twdg_data->%s = GTK_Widget(gtk_builder_get_object(wdg_data->builder, \"%s\"));\n", attr[3], attr[3]);
-			}
-			else {
-				fprintf(fp_widget, "\twdg_data->%s = GTK_Widget(gtk_builder_get_object(wdg_data->builder, \"%s\"));\n", attr[3], attr[3]);
-			}
-			
-			fprintf(stderr, "%s\t", attr[1]);
-			fprintf(fp_struct, "%s\t", attr[1]);
 
-			if (strlen(attr[1]) < 8)	{
-				fprintf(stderr, "\t\t");
-				fprintf(fp_struct, "\t\t");
-			}
-			else 
-			if (strlen(attr[1]) < 12)	{
-				fprintf(stderr, "\t");
-				fprintf(fp_struct, "\t");
-			}
-		
-			fprintf(stderr, "*%s;\n", attr[3]);
-			fprintf(fp_struct, "*%s;\n", attr[3]);
+			#ifdef DEBUGLEVEL2
+			fprintf(stderr, "%s %s %s %s %s\n\r",attr[0],attr[1],attr[2],attr[3],attr[4]);
+			#endif
+
+			if(strstr(attr[1],"GtkAction") == NULL)	{
+				if(strstr(attr[1],"GtkEntry") != NULL)	{
+					fprintf(stderr, "%s\t\t\t", attr[1]);
+					fprintf(fp_struct, "%s\t\t\t", attr[1]);				
+				}
+				else
+				if(strstr(attr[1],"GtkAdjustment") != NULL)	{
+					fprintf(stderr, "%s\t", attr[1]);
+					fprintf(fp_struct, "%s\t", attr[1]);
+				}
+				else	{
+					fprintf(fp_widget, "\twdg_data->%s = GTK_WIDGET(gtk_builder_get_object(wdg_data->builder, \"%s\"));\n", attr[3], attr[3]);
+					fprintf(stderr, "GtkWidget\t\t");
+					fprintf(fp_struct, "GtkWidget\t\t");
+				}
+				fprintf(stderr, "*%s;\n", attr[3]);
+				fprintf(fp_struct, "*%s;\n", attr[3]);
+			} 			
 		}
 	}
 
