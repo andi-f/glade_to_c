@@ -7,9 +7,13 @@ A simple program to parse Glade-Files with expat and create some c-code.
 
 2. Install
 
-    Copy the binary into a $somewhere/bin 
+    sudo make install
+    
+2. Remove
 
-3. Usage:
+    sudo make distclean
+    
+4. Usage:
 
     glade_to_c $filename [optional] widget structure name
     
